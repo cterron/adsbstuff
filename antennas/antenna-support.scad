@@ -9,7 +9,11 @@ ancho_cubo = radio_exterior - radio_interior;
 altura_cilindro=10;
 altura_cuerpo=50;
 angulo=30;
-radio_interno_agujero=8;
+radio_interno_agujero=9.5;
+radio_soporte=9.5;
+radio_soporte_antena=8;
+radio_soporte_exterior=8;
+altura_soporte=15;
 //translate([0,-radio_interior,0])
 
 module piramide_truncada(base,base_superior,altura){
@@ -97,7 +101,7 @@ translate([radio_interior,0,0])
 square([ancho_cubo,altura_cuerpo]);
 }
 
-
+/*
 rotate([0,0,-90])
 rotate_extrude(angle = angulo ){
 translate([radio_interior,0,0])
@@ -108,7 +112,7 @@ rotate([0,0,-120 ])
 rotate_extrude(angle = angulo ){
 translate([radio_interior,0,0])
 square([ancho_cubo,altura_cuerpo]);
-}
+}*/
 
 
 }
@@ -143,18 +147,28 @@ module prisma_triangular(base,altura){
     
 }
 
+module soporte(base,base_ancho,altura_soporte,radio_soporte,radio_soporte_exterior) {
+difference(){
+translate([-base/2,-base/2,0])
+cube([base,base,base_ancho]);
+cylinder(r=radio_soporte,h=altura_soporte);
+}
+difference(){
+cylinder(r=radio_soporte+2,h=altura_soporte+5);
+cylinder(r=radio_soporte,h=altura_soporte);
+translate([0,0,altura_soporte])
+    cylinder(r=radio_soporte_exterior,h=5);
+}
+}
+
 translate([-chapa_superior/2+chapa_ancho,chapa_superior/2,altura_cuerpo])
 rotate([90,0,-90])
-prisma_triangular(base=chapa_superior,altura=5);
+prisma_triangular(base=chapa_superior,altura=chapa_ancho);
 
 translate([chapa_superior/2,chapa_superior/2,altura_cuerpo])
 rotate([90,0,-90])
 prisma_triangular(base=chapa_superior,altura=chapa_ancho);
 /* Basee con agujero */
-translate([-(chapa_superior/2),chapa_superior/2,altura_cuerpo])
-rotate([90,0,0])
-difference(){
-cube([chapa_superior,chapa_superior,chapa_ancho]);
-translate([chapa_superior/2,chapa_superior/2,0])    
-cylinder(r=radio_interno_agujero,h=chapa_ancho);  
-}
+translate([0,chapa_superior/2-chapa_ancho,altura_cuerpo+chapa_superior/2])
+rotate([-90,0,0])
+soporte(base=chapa_superior,base_ancho=chapa_ancho,radio_soporte=9.5,altura_soporte=10,radio_soporte_exterior=8);
